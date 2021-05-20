@@ -1,2 +1,1 @@
-# data-structures-algorithms
-Data Structures and Algorithms coursework. 
+# Data Structures and Algorithms
