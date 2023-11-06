@@ -1,107 +1,78 @@
-## Represents a single node in the Trie
-class TrieNode:
+import hashlib
+from datetime import datetime
+
+
+class Block:
+
+    def __init__(self, timestamp, data, previous_hash):
+        self.timestamp = timestamp
+        self.data = data
+        self.previous_hash = previous_hash
+        self.hash = self.calc_hash()
+
+    def calc_hash(self):
+        sha = hashlib.sha256()
+        hash_str = (str(self.timestamp) + str(self.data) + str(self.previous_hash)).encode('utf-8')
+        sha.update(hash_str)
+        return sha.hexdigest()
+    
+    def __repr__(self):
+        return f"Block data: {self.data} \nTimestamp: {self.timestamp} \nHash: {self.hash}"
+
+class BlockChain:
+
     def __init__(self):
-        ## Initialize this node in the Trie
-        self.children = {}
-        self.is_word = False
+        self.tail = None
+        self.size = 0
+
+    def append(self, data):
+        if self.tail is None:
+            self.tail = Block(datetime.now(), data, previous_hash=None)
+        else:
+            self.tail = Block(datetime.now(), data, previous_hash=self.tail)
+        self.size += 1
+
+    def search(self, data):
+        if self.tail:
+            curr_block = self.tail
+            while curr_block:
+                if curr_block.data == data:
+                    return curr_block
+                curr_block = curr_block.previous_hash 
+        return None
     
-    def insert(self, char):
-        ## Add a child node in this Trie
-        if char not in self.children:
-            self.children[char] = TrieNode()
-        
-    def suffixes(self, suffix = ''):
-        ## Recursive function that collects the suffix for 
-        ## all complete words below this point
-        
-        suffix_list = []
-        
-        # Add word for suggestion in recursive call
-        if self.is_word and suffix != '':
-            suffix_list.append(suffix)
-        
-        # Stop condition of recursive call
-        if len(self.children) == 0:
-            return suffix_list
-        
-        for char in self.children:
-            suffix_list.extend(self.children[char].suffixes(suffix=suffix+char))
-            
-        return suffix_list
 
-        
-## The Trie itself containing the root node and insert/find functions
-class Trie:
-    def __init__(self):
-        ## Initialize this Trie (add a root node)
-        self.root = TrieNode()
-        
-    def insert(self, word):
-        ## Add a word to the Trie
-        cur_node = self.root
-        
-        for char in word:
-            cur_node.insert(char)
-            cur_node = cur_node.children[char]
-        
-        cur_node.is_word = True
-        
-        
-    def find(self, prefix):
-        ## Find the Trie node that represents this prefix
-        cur_node = self.root
-        
-        for char in prefix:
-            if char not in cur_node.children:
-                return False
-            cur_node = cur_node.children[char]
-        
-        return cur_node
+    def get_size(self):
+        return self.size
 
+## Add your own test cases: include at least three test cases
+## and two of them must include edge cases, such as null, empty or very large values
 
-def test_trie(trie, wordList):
-    # Insert words into trie
-    for word in wordList:
-        trie.insert(word)
+blockchain = BlockChain()
 
-    # Test 1: Basic Functionality
-    prefix = "ant"
-    expected_suffixes = ["hology", "agonist", "onym"]
-    assert sorted(trie.find(prefix).suffixes()) == sorted(expected_suffixes)
-    print(f"Test with prefix '{prefix}' passed!")
-    
-    # Test 2: Prefix Not in Trie
-    prefix = "xy"
-    assert trie.find(prefix) == False
-    print(f"Test with prefix '{prefix}' passed!")
+blockchain.append('A')
+blockchain.append('B')
+blockchain.append('C')
 
-    # Test 3: Full Word as Prefix
-    prefix = "trie"
-    expected_suffixes = []
-    assert sorted(trie.find(prefix).suffixes()) == sorted(expected_suffixes)
-    print(f"Test with prefix '{prefix}' passed!")
+## Test Case 1
+print(blockchain.get_size())  # 3
 
-    # Test 4: Empty Trie
-    empty_trie = Trie()
-    prefix = "ant"
-    assert empty_trie.find(prefix) == False
-    print(f"Test with prefix '{prefix}' on an empty trie passed!")
+## Test Case 2
+print(blockchain.search('B')) # prints block data
 
-    # Test 5: Edge Cases
-    prefix = ""
-    expected_suffixes = wordList  # Since entire words are the suffixes if prefix is empty
-    assert sorted(trie.find(prefix).suffixes()) == sorted(expected_suffixes)
-    print(f"Test with empty prefix passed!")
-    
-    prefix = "a" * 1000  # Very long string
-    assert trie.find(prefix) == False
-    print(f"Test with very long prefix passed!")
+## Test Case 3
+print(blockchain.search('A')) # prints block data
 
-MyTrie = Trie()
-wordList = [
-    "ant", "anthology", "antagonist", "antonym", 
-    "fun", "function", "factory", 
-    "trie", "trigger", "trigonometry", "tripod"
-]
+## Test Case 4
+print(blockchain.search('C')) # prints block data
 
-test_trie(MyTrie, wordList)
+## Test Case 5
+print(blockchain.search('D')) # prints None
+
+## Test Case 6
+blockchain.append('')
+print(blockchain.search('')) # prints block data
+
+## Test Case 7
+blockchain = BlockChain()
+print(blockchain.search('A')) # prints None

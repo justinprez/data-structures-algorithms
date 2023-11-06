@@ -1,48 +1,75 @@
-def sort_012(input_list):
+class Group(object):
+    def __init__(self, _name):
+        self.name = _name
+        self.groups = []
+        self.users = []
+
+    def add_group(self, group):
+        self.groups.append(group)
+
+    def add_user(self, user):
+        self.users.append(user)
+
+    def get_groups(self):
+        return self.groups
+
+    def get_users(self):
+        return self.users
+
+    def get_name(self):
+        return self.name
+
+
+parent = Group("parent")
+child = Group("child")
+sub_child = Group("subchild")
+
+sub_child_user = "sub_child_user"
+sub_child.add_user(sub_child_user)
+
+child.add_group(sub_child)
+parent.add_group(child)
+
+
+def is_user_in_group(user, group):
     """
-    Given an input array consisting on only 0, 1, and 2, sort the array in a single traversal.
+    Return True if user is in the group, False otherwise.
 
     Args:
-       input_list(list): List to be sorted
+      user(str): user name/id
+      group(class:Group): group to check user membership against
     """
-    idx = 0
-    left = 0
-    right = len(input_list) - 1
-
-    while idx <= right:
-        if input_list[idx] == 2:
-            input_list[right], input_list[idx] = input_list[idx], input_list[right]
-            right -= 1
-        elif input_list[idx] == 0:
-            input_list[left], input_list[idx] = input_list[idx], input_list[left]
-            idx += 1
-            left += 1
-        else:
-            idx += 1
-    
-    return input_list
-
-
-def test_function(test_case):
-    sorted_array = sort_012(test_case)
-    print(sorted_array)
-    if sorted_array == sorted(test_case):
-        print("Pass")
+    if not user:
+        return False
+    elif user in group.get_users():
+        return True
     else:
-        print("Fail")
+        for subgroup in group.get_groups():
+            if is_user_in_group(user, subgroup):
+                return True
+    return False
 
-test_function([0, 0, 2, 2, 2, 1, 1, 1, 2, 0, 2])
-test_function([2, 1, 2, 0, 0, 2, 1, 0, 1, 0, 0, 2, 2, 2, 1, 2, 0, 0, 0, 2, 1, 0, 2, 0, 0, 1])
-test_function([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2])
-test_function([2, 0, 1])
 
-test_function([])  # Empty list
-test_function([0, 0, 0, 0])  # All 0s
-test_function([1, 1, 1, 1])  # All 1s
-test_function([2, 2, 2, 2])  # All 2s
-test_function([0, 0, 0, 1, 1, 1])  # 0s and 1s, no 2s
-test_function([1, 1, 1, 2, 2, 2])  # 1s and 2s, no 0s
-test_function([0, 0, 0, 2, 2, 2])  # 0s and 2s, no 1s
-test_function([0])  # Single element 0
-test_function([1])  # Single element 1
-test_function([2])  # Single element 2
+## Add your own test cases: include at least three test cases
+## and two of them must include edge cases, such as null, empty or very large values
+
+## Test Case 1
+print(is_user_in_group('sub_child_user', parent))  # True
+
+## Test Case 2
+print(is_user_in_group('', parent))  # False
+
+## Test Case 3
+parent.add_user('parent_user')
+print(is_user_in_group('parent_user', parent))  # True
+
+## Test Case 4
+print(is_user_in_group('parent_user', child))  # False
+
+## Test Case 5
+grandchild = Group("grandchild")
+grandchild_user = "grandchild_user"
+grandchild.add_user(grandchild_user)
+child.add_group(grandchild)
+
+print(is_user_in_group('grandchild_user', parent))  # True

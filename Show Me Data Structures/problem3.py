@@ -1,74 +1,140 @@
-def rearrange_digits(input_list):
-    """
-    Rearrange Array Elements so as to form two number such that their sum is maximum.
+import sys
+from collections import Counter
+import heapq as hq
 
-    Args:
-       input_list(list): Input List
-    Returns:
-       (int),(int): Two maximum sums
-    """
-    if not input_list:
-        return [0, 0]
-    elif len(input_list) == 1:
-        return [input_list[0], 0]
 
-    heapsort(input_list) # O(n log n) sort function
-    
-    # logic to create the highest sum value
-    num1, num2 = '', ''
-    for i, val in enumerate(reversed(input_list)):
-        if i % 2 == 0:
-            num1 += str(val)
+class Node:
+    def __init__(self, char, freq, left = None, right = None):
+        self.char = char
+        self.freq = freq
+        self.left = left
+        self.right = right
+
+    def __lt__(self, next_node): 
+        return self.freq < next_node.freq 
+
+
+class HuffmanTree:
+    def __init__(self, data):
+        if not data:
+            self.root = None
+            self.code_table = {}
         else:
-            num2 += str(val)
-    return [int(num1), int(num2)]
+            self.root, self.code_table = self.__huffman_code(data)
 
-def heapsort(arr):
-    # first convert array to max heap in reverse order traversal
-    for i in range(len(arr)//2-1,-1,-1):
-        heapify(arr,len(arr),i)
+    # Function to build the huffman tree using a min heap, returns the tree root and code table
+    def __huffman_code(self,data):
+        char_count = Counter(data)
+        nodes = []
 
-    # Then move top element to the end of array and heapify on first element
-    for i in range(len(arr)-1,-1,-1):
-        arr[0], arr[i] = arr[i], arr[0]
-        heapify(arr, i, 0)
+        for x in char_count:
+            hq.heappush(nodes,Node(char=x,freq=char_count[x]))
+
+        if len(nodes) == 1:
+            hq.heappush(nodes, Node(char=None, freq=0))
+
+        while len(nodes) > 1:
+            left = hq.heappop(nodes)
+            right = hq.heappop(nodes)
+            new_node = Node(freq = left.freq + right.freq, 
+                            char = None, 
+                            left = left, 
+                            right = right
+                            )
+            hq.heappush(nodes, new_node)
+
+        root = nodes[0]
+        code_table = {}
+        self.__build_code_table(root, "", code_table)
+        return root, code_table
+
+    # Traverse the huffman tree building the code table to convert letters to binary values
+    def __build_code_table(self, node, current_code, table):
+        if node is None:
+            return
+        if node.char is not None:
+            table[node.char] = current_code
+            return
+        self.__build_code_table(node.left, current_code + "0", table)
+        self.__build_code_table(node.right, current_code + "1", table)
+
+
+    # Builds Binary string using the code table
+    def encode(self, data):
+        return ''.join([self.code_table[char] for char in data])
+
+
+    # Converts binary string back into letters traversing the tree
+    # Digit 0 indicates left traversal and digit 1 indicates right traversal
+    # Once reaching a leaf node add the letter to the string, return to root.
+    def decode(self, data):
+        if not self.code_table:
+            return ''
+
+        cur_node = self.root
+        decoded = ""
+        for bit in data:
+            if bit == '0':
+                cur_node = cur_node.left
+            else:
+                cur_node = cur_node.right
+            if cur_node.char:
+                decoded += cur_node.char
+                cur_node = self.root
+        return decoded
+        
+
+def huffman_encoding(data):
+    if not data:
+        return '', HuffmanTree('')
+    tree = HuffmanTree(data)
+    return tree.encode(data), tree
+
+
+def huffman_decoding(data,tree):
+    return tree.decode(data)
+
 
     
-def heapify(arr, n, i):
-    largest_idx = i
-    left_idx = i * 2 + 1
-    right_idx = i * 2 + 2
 
-    if left_idx < n and arr[left_idx] > arr[largest_idx]:
-        largest_idx = left_idx
-    
-    if right_idx < n and arr[right_idx] > arr[largest_idx]:
-        largest_idx = right_idx
-    
-    if largest_idx != i:
-        arr[i], arr[largest_idx] = arr[largest_idx], arr[i]
-        heapify(arr,n,largest_idx)
+if __name__ == "__main__":
+    codes = {}
 
+    a_great_sentence = "The bird is the word"
 
+    print ("The size of the data is: {}\n".format(sys.getsizeof(a_great_sentence)))
+    print ("The content of the data is: {}\n".format(a_great_sentence))
 
-def test_function(test_case):
-    output = rearrange_digits(test_case[0])
-    solution = test_case[1]
-    if sum(output) == sum(solution):
-        print("Pass")
-    else:
-        print(sum(output),sum(solution))
+    encoded_data, tree = huffman_encoding(a_great_sentence)
 
-        print("Fail")
+    print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
+    print ("The content of the encoded data is: {}\n".format(encoded_data))
 
+    decoded_data = huffman_decoding(encoded_data, tree)
 
-test_function([[1, 2, 3, 4, 5], [531, 42]])
-test_function([[4, 6, 2, 5, 9, 8], [964, 852]])
-test_function([[1, 1], [1, 1]])
-test_function([[1], [1, 0]])
-test_function([[], [0, 0]])
-test_function([[0, 0, 0, 0, 0], [0, 0]])
-test_function([[7, 7, 7, 7], [77, 77]])
-test_function([[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [97531, 86420]])
-test_function([[9, 8, 7, 6, 5], [975, 86]])
-test_function([[1, 1, 1, 1, 5, 6, 7], [7511, 611]])
+    print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
+    print ("The content of the encoded data is: {}\n".format(decoded_data))
+
+## Add your own test cases: include at least three test cases
+## and two of them must include edge cases, such as null, empty or very large values
+
+## Test Case 1: Empty String
+test_case_1 = ""
+encoded_data, tree = huffman_encoding(test_case_1)
+decoded_data = huffman_decoding(encoded_data, tree)
+assert test_case_1 == decoded_data
+print(f"Test Case 1 - Original: {test_case_1} | Encoded: {encoded_data} | Decoded: {decoded_data}")
+
+# Test Case 2: String with Single Repeated Character
+test_case_2 = "aaaaaaa"
+encoded_data, tree = huffman_encoding(test_case_2)
+decoded_data = huffman_decoding(encoded_data, tree)
+assert test_case_2 == decoded_data
+print(f"Test Case 2 - Original: {test_case_2} | Encoded: {encoded_data} | Decoded: {decoded_data}")
+
+# Test Case 3: Conceptual Large String
+test_case_3 = "The quick brown fox jumps over the lazy dog" * 100  # repeating for demonstration
+encoded_data, tree = huffman_encoding(test_case_3)
+decoded_data = huffman_decoding(encoded_data, tree)
+assert test_case_3 == decoded_data
+print(f"Test Case 3 - Original (first 50 chars): {test_case_3[:50]}... | Encoded (first 50 bits): {encoded_data[:50]}... | Decoded (first 50 chars): {decoded_data[:50]}...")

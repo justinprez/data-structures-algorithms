@@ -1,34 +1,63 @@
-def sqrt(number):
-    """
-    Calculate the floored square root of a number
+import collections
 
-    Args:
-       number(int): Number to find the floored squared root
-    Returns:
-       int: Floored Square Root
-    """
-    if number == 0 or number == 1:
-        return number
 
-    start, end = 0, number
-    while start <= end:
-        mid = (start + end) // 2
-        if mid * mid == number:
-            return mid
-        if mid * mid < number:
-            start = mid + 1
-            ans = mid  # Record of last mid value s.t. mid * mid < number
+class LRU_Cache(object):
+
+    def __init__(self, capacity = 0):
+        self.capacity = capacity
+        self.cache = collections.OrderedDict()
+
+    def get(self, key):
+        if key not in self.cache:
+            return -1
         else:
-            end = mid - 1
-    return ans
+            self.cache.move_to_end(key)
+            return self.cache[key]
+        
+    def set(self, key, value):
+        self.cache[key] = value
+        self.cache.move_to_end(key)
+        if len(self.cache) > self.capacity:
+            self.cache.popitem(last = False)
 
 
+our_cache = LRU_Cache(5)
+
+our_cache.set(1, 1);
+our_cache.set(2, 2);
+our_cache.set(3, 3);
+our_cache.set(4, 4);
 
 
-print ("Pass" if  (3 == sqrt(9)) else "Fail")
-print ("Pass" if  (0 == sqrt(0)) else "Fail")
-print ("Pass" if  (4 == sqrt(16)) else "Fail")
-print ("Pass" if  (1 == sqrt(1)) else "Fail")
-print ("Pass" if  (5 == sqrt(27)) else "Fail")
-print ("Pass" if  (31622 == sqrt(1000000000)) else "Fail")  # Large number test
-print ("Pass" if  (7 == sqrt(50)) else "Fail")  # Prime number test
+print(our_cache.get(1))       # returns 1
+print(our_cache.get(2))       # returns 2
+print(our_cache.get(9))      # returns -1 because 9 is not present in the cache
+
+our_cache.set(5, 5) 
+our_cache.set(6, 6)
+
+print(our_cache.get(3))      # returns -1 because the cache reached it's capacity and 3 was the least recently used entry
+
+## Add your own test cases: include at least three test cases
+## and two of them must include edge cases, such as null, empty or very large values
+
+## Test Case 1
+our_cache = LRU_Cache(0)
+our_cache.set(1, 1);
+print(our_cache.get(1)) # return -1
+
+## Test Case 2
+our_cache = LRU_Cache(2)
+our_cache.set(1, 1);
+our_cache.set(1, 2);
+our_cache.set(3, 3);
+print(our_cache.get(1))  # return 2
+print(our_cache.get(3))  # return 3
+our_cache.set(2, 1);
+print(our_cache.get(1))  # -1
+
+
+## Test Case 3
+our_cache = LRU_Cache()
+our_cache.set(1, 1);
+print(our_cache.get(1)) # return -1

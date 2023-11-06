@@ -1,69 +1,71 @@
 # Analysis
 
+
 ## Problem 1
-The binary search algorithm is used here due to its logarithmic efficiency which suits the problem's requirement. Binary search is an efficient way to find a particular value from a sorted set of values. In this case, the set of values is the range from 0 to the given number, and we are searching for the square root within this range. Handling the base cases (0 and 1) separately at the beginning simplifies the main part of the function. This avoids unnecessary calculations and ensures the function directly returns for these simple inputs.
+collections.OrderedDict() is used as the main data structure for the cache. This data structure was chosen because it keeps the order of insertion, which is crucial for the LRU policy. Elements can be efficiently added or removed from both ends. When an item is accessed (using the get method) or added/updated (using the set method), it is moved to the end of the OrderedDict. This way, the least recently used items are always at the beginning.
 ### Time Complexity
-Binary search has a time complexity of O(log n).
+The get method has a time complexity of O(1) for both the key not in self.cache check and the move_to_end operation.
+The set method has a time complexity of O(1) for setting a value, moving it to the end of the ordered dictionary, and popping the first item.
 ### Space Complexity
-The space complexity is O(1).
+The space complexity is O(capacity) because the cache will store at most capacity number of key-value pairs.
 
 
-### Problem 2
-The function first determines the pivot point of the rotated sorted array in O(logn) time. Once the pivot is found, the function performs a binary search on the two subarrays (the ones before and after the pivot) in O(logn) time for each subarray. 
+## Problem 2
+The function employs a recursive algorithm, which is a natural choice for problems that involve a tree or graph-like structure, such as a file system.
+The algorithm uses a depth-first search (DFS) approach, diving deep into each directory before backtracking.
 ### Time Complexity
-he total time complexity remains O(logn).
+The function find_files traverses every directory and file under the given path. Therefore, in the worst case, it has to visit each file and subdirectory once. If there are n files/subdirectories in total, the time complexity is O(n).
+The endswith operation checks the suffix of each file, which is O(1) as string length for filenames will generally be small and constant.
+The os.listdir operation is linear in the number of entries in the directory.
 ### Space Complexity
-The space complexity is O(1).
+The list_of_paths list will at most contain all the files that match the given suffix. Therefore, in the worst case, its size will be n, giving a space complexity of O(n).
+There is also a recursive call for subdirectories, and in the worst case, if all directories are nested one inside the other, the recursive call stack will grow to the depth of these directories. However, the stack space is typically limited, and the overall space complexity remains O(n).
 
 
-### Problem 3
-The use of heapsort is in line with the problem's requirement for O(nlogn) time complexity. A heap-based approach to sorting takes advantage of the properties of a binary heap. The steps to create two numbers using the reversed list, ensures the numbers are created with alternating digits from the sorted list and guarantees that we get two numbers such that their sum is maximum.
-### Time Complexity
-The function uses heapsort which has a time complexity of O(nlogn) where n is the length of the input list. Iterating over the reversed list to form the two numbers has a time complexity of O(n). Thus, the overall time complexity is dominated by heapsort: O(nlogn).
+## Problem 3
+A Min Heap (implemented using Python's heapq) is used to ensure the two nodes with the smallest frequencies are combined first, which is essential for Huffman coding.
+The choice to use a Counter object to determine character frequencies in the data is apt, as it offers a concise and efficient way to achieve this.
+A separate Node class is defined to facilitate the creation and manipulation of the Huffman tree. Its __lt__ method ensures nodes are compared based on frequency in the heap.
+The decision to handle the edge case of a single character input separately was done by pushing an additional node with a frequency of 0.
+### Time complexity
+Building the frequency count with Counter(data) is O(n), where n is the length of the input data.
+Constructing the Huffman tree with the heap operations: In the worst-case scenario, it involves n heappush and n/2 heappop operations, giving it an O(n log n) complexity.
+Constructing the encoding table by traversing the Huffman tree is O(n).
+The encoding and decoding processes both involve traversing the input data once, giving them a time complexity of O(n).
+The overall time complexity is O(n log n).
 ### Space Complexity
-The space complexity is O(1) as heapsort is an in-place sorting algorithm.
+The frequency count dictionary, the heap with nodes, and the code table all occupy space. The overall space complexity is O(n).
 
 
 ## Problem 4
-The loop continues as long as idx doesn't surpass the right pointer. Within this loop:
-- If input_list[idx] is 2, the value at idx is swapped with the value at right, and then the right pointer is decremented. This ensures all 2s are moved to the end of the list.
-- If input_list[idx] is 0, the value at idx is swapped with the value at left, and both idx and left pointers are incremented. This ensures all 0s are moved to the beginning of the list.
-- If input_list[idx] is 1, only idx is incremented, ensuring 1s stay in the middle.
+The algorithm checks for a user's membership in a group recursively. It first checks the immediate group. If the user isn't found, the function recursively checks all subgroups. The recursion allows for an elegant solution that can handle multiple levels of nested groups.
 ### Time Complexity
-This loop, at worst, traverses the entire list once, so it has a time complexity of O(n), where n is the length of the input list.
+The function first checks if the user is present in the current group's users list. This check involves going through all the users in that group, leading to O(u) for u users. If the user is not found in the immediate group, the function recursively checks each subgroup. For every subgroup, the same process is repeated - checking all users and then all subgroups. This leads to a time complexity of O(g) for each group and its subgroups. Therefore, in the worst-case scenario where the function has to check all users in all groups and subgroups, the time complexity is O(u x g).
 ### Space Complexity
-The space complexity is O(1).
+Space complexity is O(g), where the primary space overhead is from the recursive call stack, which grows with the depth of the nested groups, not with the number of users.
 
 
 ## Problem 5
-TrieNode Class:
-- __init__: Initializes the node with an empty dictionary for its children and a flag is_word indicating if the node represents the end of a word. The time complexity and space complexity is O(1).
-- insert: Adds a child node to the current node if it doesn't already exist. Time complexity is O(1) (for dictionary operations) and space complexity could be O(1) per character if the node doesn't exist.
-- suffixes: This method is used to fetch all the suffixes of a given prefix in the trie. It uses recursion to traverse down the trie until it finds all words. In the worst case, this can be O(n) where n is the number of nodes in the trie (i.e., the total number of characters in the trie). The space complexity is the space required to store the list of suffixes, which can be O(n) in the worst case, plus the space used by the call stack due to recursion (which is at most the depth of the trie).
-
-Trie Class:
-- __init__: Initializes the Trie with a root node. Time and space complexity is O(1).
-- insert: Inserts a word into the Trie. This function traverses the word character by character and inserts nodes as required. Since the function processes each character of the word once, the time complexity is O(n), where n is the length of the word being inserted. The space complexity is also O(n) in the worst case, if all characters of the word lead to new nodes.
-- find: Finds if a prefix exists in the Trie. It traverses character by character for the given prefix. The time complexity is O(n) where n is the length of the prefix. The space complexity is O(1).
+The Block class represents individual blocks in the blockchain. Each block contains a timestamp, data, previous block's hash (which acts as a link to the previous block), and its own hash.
+The BlockChain class acts as a singly linked list of blocks, where each block points to its predecessor via the previous_hash attribute.
+The blockchain's append method ensures the chaining of blocks, where each block is linked to its predecessor.
+The search method linearly traverses the blockchain from the tail (latest block) to the oldest block.
+### Time Complexity
+The complexity for each of the methods implemented are given:
+-	init: O(1)
+-	append: O(1)
+-	search: O(n)
+-	get_size: O(1)
+### Space Complexity
+The space used by the blockchain is linear, O(n), where n is the number of blocks. Each append operation increases the size of the blockchain by one block.
 
 
 ## Problem 6
-As we iterate through the list, we can keep track of the current minimum and maximum values, updating them as we encounter smaller or larger values.
+The union and intersection functions convert the linked lists to sets for efficient set operations.
+The results of these set operations are then converted back into linked lists.
+This approach leverages the efficiency of set operations in Python but has the overhead of converting between linked lists and sets.
 ### Time Complexity
-The code iterates through the list of integers just once. So, the time complexity is O(n).
+union: The method first converts both linked lists to sets with O(n) and O(m) time complexities respectively, where n and m are the sizes of the two linked lists. The union operation on sets is O(n+m). The loop that appends values from the unioned set to the linked list has a time complexity of O(n+m) due to the append operation. Overall, the time complexity is O(n+m).
+intersection: This method follows the same logic as union, making its time complexity also O(n+m).
 ### Space Complexity
-We are using a constant amount of extra space, therefore the space complexity is O(1).
-
-
-## Problem 7
-### Time Complexity:
-Insertion (add_handler method in the Router class):
-- split_path: O(k), where k is the length of the path string. Inserting into RouteTrie: O(n), where n is the number of parts in the path. Combined, the time complexity for insertion remains O(k + n), but since n (number of parts) is limited by the length of the path string k, we can simplify this to O(k).
-- Lookup (lookup method in the Router class): split_path: O(k), where k is the length of the path string. Finding in RouteTrie: O(n), where n is the number of parts in the path.
-Combined, similar to insertion, the time complexity for lookup remains O(k + n), which simplifies to O(k) since n is limited by k.
-### Space Complexity:
-- RouteTrieNode: Each node has a dictionary children, which, in the worst case, will have as many entries as there are unique parts in all the paths. In practice, the number of unique parts will be far less than the number of paths, especially with shared prefixes. Each node also has a handler, which is a string, but we can consider this constant space for our analysis since the size of this string doesn't grow with the size of the input.
-- RouteTrie: The space is primarily consumed by the nodes in the Trie. In the worst case, where every path part is unique, the space taken by the Trie will be O(p * n) where p is the average number of parts per path, and n is the number of paths. In many real-world scenarios, though, paths will have shared parts, and the Trie will consume significantly less space than this worst-case scenario.
-- Router: The router uses a RouteTrie and two strings (root_handler and not_found_handler), so its space complexity is mainly determined by the RouteTrie.
-
-Given these analyses, the time complexities for insertion and lookup are both O(k), where k is the length of the path string. The space complexity for the Trie-based router, in the worst case, is O(p * n), where p is the average number of parts per path and n is the number of paths.
+Both these methods create a new linked list for the result. In the worst case, for the union method, this linked list could be of size n+m. Thus, the space complexity is O(n+m).

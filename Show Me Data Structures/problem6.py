@@ -1,53 +1,156 @@
-def get_min_max(ints):
-    """
-    Return a tuple(min, max) out of list of unsorted integers.
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+    def __repr__(self):
+        return str(self.value)
+
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def __str__(self):
+        cur_head = self.head
+        out_string = ""
+        while cur_head:
+            out_string += str(cur_head.value) + " -> "
+            cur_head = cur_head.next
+        return out_string
+
+
+    def append(self, value):
+        if self.head is None:
+            self.head = Node(value)
+            return
+
+        node = self.head
+        while node.next:
+            node = node.next
+
+        node.next = Node(value)
+
+    def size(self):
+        size = 0
+        node = self.head
+        while node:
+            size += 1
+            node = node.next
+        return size
     
-    Args:
-       ints(list): list of integers containing one or more integers
-    """
-    if not ints:  # Handle the case of an empty list
-        return None
+    def to_set(self):
+        cur_head = self.head
+        out = set()
+        while cur_head:
+            out.add(cur_head.value)
+            cur_head = cur_head.next
+        return out
 
-    min_val = ints[0]
-    max_val = ints[0]
+def union(llist_1, llist_2):
+    unionList = LinkedList()
+    set1 = llist_1.to_set()
+    set2 = llist_2.to_set()
 
-    for num in ints:
-        if num < min_val:
-            min_val = num
-        elif num > max_val:
-            max_val = num
+    for val in set1.union(set2):
+        unionList.append(val)
+    
+    return unionList
 
-    return (min_val, max_val)
 
-# Test
-import random
 
-l = [i for i in range(0, 10)]  # a list containing 0 - 9
-random.shuffle(l)
+def intersection(llist_1, llist_2):
+    interList = LinkedList()
+    set1 = llist_1.to_set()
+    set2 = llist_2.to_set()
 
-print ("Pass" if ((0, 9) == get_min_max(l)) else "Fail")
+    for val in set1.intersection(set2):
+        interList.append(val)
 
-# Test 1: Test with a list containing repeating numbers.
-l = [2, 2, 2, 2, 2, 2]
-print("Pass" if ((2, 2) == get_min_max(l)) else "Fail")
+    return interList
 
-# Test 2: Test with a list containing negative numbers.
-l = [-1, -2, -3, -4, -5]
-print("Pass" if ((-5, -1) == get_min_max(l)) else "Fail")
 
-# Test 3: Test with a list containing a single number.
-l = [4]
-print("Pass" if ((4, 4) == get_min_max(l)) else "Fail")
+## Test case 1
 
-# Test 4: Test with an empty list.
-l = []
-print("Pass" if (None == get_min_max(l)) else "Fail")
+linked_list_1 = LinkedList()
+linked_list_2 = LinkedList()
 
-# Test 5: Test with a list containing both positive and negative numbers.
-l = [-10, -5, 0, 5, 10]
-print("Pass" if ((-10, 10) == get_min_max(l)) else "Fail")
+element_1 = [3,2,4,35,6,65,6,4,3,21]
+element_2 = [6,32,4,9,6,1,11,21,1]
 
-# Test 6: Test with a larger range of numbers.
-l = [i for i in range(-1000, 1000)]
-random.shuffle(l)
-print("Pass" if ((-1000, 999) == get_min_max(l)) else "Fail")
+for i in element_1:
+    linked_list_1.append(i)
+
+for i in element_2:
+    linked_list_2.append(i)
+
+print (union(linked_list_1,linked_list_2))
+print (intersection(linked_list_1,linked_list_2))
+
+## Test case 2
+
+linked_list_3 = LinkedList()
+linked_list_4 = LinkedList()
+
+element_1 = [3,2,4,35,6,65,6,4,3,23]
+element_2 = [1,7,8,9,11,21,1,3]
+
+for i in element_1:
+    linked_list_3.append(i)
+
+for i in element_2:
+    linked_list_4.append(i)
+
+print (union(linked_list_3,linked_list_4))
+print (intersection(linked_list_3,linked_list_4))
+
+## Add your own test cases: include at least three test cases
+## and two of them must include edge cases, such as null, empty or very large values
+
+## Test Case 1
+linked_list_5 = LinkedList()
+linked_list_6 = LinkedList()
+
+element_1 = [1,1,1,1,2,2,2,2]
+element_2 = [1]
+
+for i in element_1:
+    linked_list_5.append(i)
+
+for i in element_2:
+    linked_list_6.append(i)
+
+print (union(linked_list_5,linked_list_6)) # 1,2
+print (intersection(linked_list_5,linked_list_6)) # 1
+
+## Test Case 2
+linked_list_5 = LinkedList()
+linked_list_6 = LinkedList()
+
+element_1 = [1]
+element_2 = []
+
+for i in element_1:
+    linked_list_5.append(i)
+
+for i in element_2:
+    linked_list_6.append(i)
+
+print (union(linked_list_5,linked_list_6)) # 1
+print (intersection(linked_list_5,linked_list_6)) # Empty linked list
+
+## Test Case 3
+linked_list_5 = LinkedList()
+linked_list_6 = LinkedList()
+
+element_1 = []
+element_2 = []
+
+for i in element_1:
+    linked_list_5.append(i)
+
+for i in element_2:
+    linked_list_6.append(i)
+
+print (union(linked_list_5,linked_list_6)) # Empty linked list
+print (intersection(linked_list_5,linked_list_6)) # Empty linked list

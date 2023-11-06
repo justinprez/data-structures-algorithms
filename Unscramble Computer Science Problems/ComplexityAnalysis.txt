@@ -1,0 +1,18 @@
+Task0
+Time Complexity is O(1), since I am accessing elements of the array by their index.
+
+
+Task 1
+Time complexity is O(n), where n is the number of all records. Takes O(n) to construct the set of all unique numbers from the set of records.
+
+
+Task 2
+Time complexity is O(n) again as it takes, O(n) accesses to construct the dictionary from all records in calls, and O(N) to find the max duration value.
+
+
+Task 3
+Time complexity is O(nlogn). Takes O(n) to find all the unique telephone codes called by fixed-line numbers in Bangalore and the percentage of calls from fixed lines in Bangalore that are to fixed lines in Bangalore. Sort method for lexicographically ordered printing takes O(nlogn)
+
+
+Task 4
+Time complexity is O(nlogn). Takes O(n) to construct the sets for numbers that have called, been called, texted or been texted. Takes O(N) to see if calling numbers are in other sets. Sort method for lexicographically ordered printing takes O(nlogn).
