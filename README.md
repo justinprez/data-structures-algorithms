@@ -16,4 +16,4 @@ This project was under the course section of Basic Algorithms which included top
 This project was under the final course section of Advanced Algorithms and included topics like Greedy Algorithms, Graph Algorithms, Dynamic Programming, and A* Search with Heuristic Functions.
 
 ## Certificate of Completion
-![alt text](https://github.com/justinprez/Data-Structures-and-Algorithms/blob/master/udacitydsa-1.jpg?raw=true)
+![alt text](https://github.com/justinprez/data-structures-algorithms/blob/main/data_structure_algorithms_udacity_certificate.jpg)
