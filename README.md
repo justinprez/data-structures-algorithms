@@ -15,4 +15,4 @@ This project was under the course section of Basic Algorithms which included top
 ### Project 4- Route Planner
 This project was under the final course section of Advanced Algorithms and included topics like Greedy Algorithms, Graph Algorithms, Dynamic Programming, and A* Search with Heuristic Functions.
 
-[Certificate of Completion](confirm.udacity.com/e/c65e9c66-5a24-11ee-bfe4-73ca804983f4)
+## Certificate of Completion
